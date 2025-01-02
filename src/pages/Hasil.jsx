@@ -17,7 +17,7 @@ const getRiskLevel = (responses) => {
   const riskScore = selectedCount / totalQuestions;
 
   if (riskScore >= 0.75) return "Very High";
-  if (riskScore >= 0.5) return "High";
+  if (riskScore >= 0.5) return "High"; 
   if (riskScore >= 0.25) return "Moderate";
   return "Low";
 };
@@ -29,7 +29,6 @@ const Hasil = () => {
   const pickCF = {};
   const userCF = {};
   const [resultCF, setResultCF] = useState({});
-  const [locationData, setLocation] = useState("");
 
   const savedWeather = JSON.parse(localStorage.getItem("checkboxWeather"));
   const savedSungai = JSON.parse(localStorage.getItem("checkboxSungai"));
@@ -45,7 +44,7 @@ const Hasil = () => {
     savedSeismik,
     savedLahan,
     savedTsunami,
-    savedWeather,
+    savedWeather
   ];
   const userData = [
     JSON.parse(localStorage.getItem("userMorfologi")),
@@ -53,60 +52,19 @@ const Hasil = () => {
     JSON.parse(localStorage.getItem("userPantai")),
     JSON.parse(localStorage.getItem("userSeismik")),
     JSON.parse(localStorage.getItem("userLahan")),
-    JSON.parse(localStorage.getItem("userTsunami")),
+    JSON.parse(localStorage.getItem("userTsunami"))
   ];
 
   const KB = {
-    Banjir: [
-      [1, 1],
-      [1, 2],
-      [1, 3],
-      [1, 4],
-      [1, 5],
-      [1, 6],
-      [1, 7],
-    ],
-    Gelombang_Tinggi: [
-      [2, 1],
-      [2, 2],
-      [2, 3],
-      [2, 4],
-      [2, 5],
-      [2, 6],
-    ],
-    Tsunami: [
-      [2, 4],
-      [5, 1],
-      [5, 2],
-      [5, 3],
-      [5, 4],
-      [5, 5],
-    ],
-    Longsor: [
-      [1, 5],
-      [4, 1],
-      [4, 2],
-      [4, 3],
-      [4, 4],
-    ],
-    Gempa_Bumi: [
-      [3, 1],
-      [3, 2],
-      [3, 3],
-      [3, 4],
-      [3, 5],
-    ],
-    Gunung_Api: [
-      [0, 1],
-      [0, 2],
-      [0, 3],
-      [0, 4],
-      [0, 5],
-    ],
+    Banjir: [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7]],
+    Gelombang_Tinggi: [[2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6]],
+    Tsunami: [[2, 4], [5, 1], [5, 2], [5, 3], [5, 4], [5, 5]],
+    Longsor: [[1, 5], [4, 1], [4, 2], [4, 3], [4, 4]],
+    Gempa_Bumi: [[3, 1], [3, 2], [3, 3], [3, 4], [3, 5]],
+    Gunung_Api: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5]]
   };
 
   useEffect(() => {
-    setLocation(JSON.parse(localStorage.getItem("dataLocation")));
     const getData = async () => {
       try {
         const colRef = collection(db, "cf-list");
@@ -118,10 +76,8 @@ const Hasil = () => {
         }));
 
         setData(data);
-        console.log(savedData.length);
 
         for (let i = 0; i < savedData.length; i++) {
-<<<<<<< HEAD
           if(savedData && savedData[i] && Array.isArray(savedData[i])){
           for (let j = 0; j < savedData[i].length; j++) {
             if (savedData[i][j]) {
@@ -132,19 +88,6 @@ const Hasil = () => {
               Object.assign(userCF, {
                 [`${i},${j + 1}`]: userData[i][j]
               });
-=======
-          if (savedData && savedData[i] && Array.isArray(savedData[i])) {
-            for (let j = 0; j < savedData[i].length; j++) {
-              if (savedData[i][j]) {
-                savedCF.push(data[i][j + 1]);
-                Object.assign(pickCF, {
-                  [`${i},${j + 1}`]: data[i][j + 1],
-                });
-                Object.assign(userCF, {
-                  [`${i},${j + 1}`]: userData[i][j],
-                });
-              }
->>>>>>> 36127b5101d1c9909793f70b1393549430a89078
             }
           }
         }
@@ -158,18 +101,14 @@ const Hasil = () => {
           for (let i in KB[key]) {
             if (pickCF.hasOwnProperty(KB[key][i])) {
               if (cfResults[key] === undefined) {
-                result =
-                  pickCF[KB[key][i]] +
-                  parseFloat(userCF[KB[key][i]]) * (1 - pickCF[KB[key][i]]);
+                result = pickCF[KB[key][i]] + parseFloat(userCF[KB[key][i]]) * (1 - pickCF[KB[key][i]]);
                 result = Math.max(-1, Math.min(1, result));
 
                 Object.assign(cfResults, {
-                  [key]: result,
+                  [key]: result
                 });
               } else {
-                result =
-                  pickCF[KB[key][i]] +
-                  parseFloat(userCF[KB[key][i]]) * (1 - pickCF[KB[key][i]]);
+                result = pickCF[KB[key][i]] + parseFloat(userCF[KB[key][i]]) * (1 - pickCF[KB[key][i]]);
                 result = Math.max(-1, Math.min(1, result));
 
                 cfResults[key] = cfResults[key] + result * (1 - cfResults[key]);
@@ -179,20 +118,24 @@ const Hasil = () => {
         }
 
         setResultCF(cfResults);
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     getData();
+
   }, []);
 
   const location = useLocation();
-  const { isRainySeason, locationName } = location.state || {};
+  const { 
+    isRainySeason, 
+    locationName
+  } = location.state || {};
 
   const recommendationsPerDisaster = {
     Banjir: {
       color: "bg-blue-200",
-<<<<<<< HEAD
       image: BanjirImage,
       recommendations: ["Pastikan adanya sistem drainase yang baik dan terawat.", "Membangun tanggul dan penampungan air untuk mengurangi risiko banjir.", "Lakukan reboisasi di daerah hulu sungai untuk menjaga keseimbangan ekosistem.","Evakuasi ke daerah yang lebih tinggi saat banjir terjadi.",
     "Simpan makanan dan air bersih dalam kemasan kedap udara.",
@@ -254,84 +197,6 @@ const Hasil = () => {
     "Laporkan kerusakan dan kebutuhan bantuan kepada pihak berwenang.",
     "Berikan dukungan kepada masyarakat yang terkena dampak dalam proses pemulihan."]
     }
-=======
-      image: "path/to/flood.jpg",
-      recommendations: [
-        "Pastikan adanya sistem drainase yang baik dan terawat.",
-        "Membangun tanggul dan penampungan air untuk mengurangi risiko banjir.",
-        "Lakukan reboisasi di daerah hulu sungai untuk menjaga keseimbangan ekosistem.",
-        "Evakuasi ke daerah yang lebih tinggi saat banjir terjadi.",
-        "Simpan makanan dan air bersih dalam kemasan kedap udara.",
-        "Hindari mengkonsumsi makanan dan air yang terkontaminasi setelah banjir.",
-        "Laporkan kerusakan dan kebutuhan bantuan kepada otoritas setempat.",
-      ],
-    },
-    Gelombang_Tinggi: {
-      color: "bg-teal-200",
-      image: "path/to/high-waves.jpg",
-      recommendations: [
-        "Pasang peringatan dini untuk masyarakat pesisir terkait potensi gelombang tinggi.",
-        "Membangun infrastruktur yang tahan gelombang tinggi, seperti penahan gelombang.",
-        "Evakuasi ke tempat yang lebih aman saat gelombang tinggi terjadi.",
-        "Hindari berada di dekat pantai atau tepi laut saat peringatan diberikan.",
-        "Ikuti instruksi dari otoritas lokal terkait keamanan dan evakuasi.",
-        "Lakukan penilaian kerusakan dan bantu masyarakat yang terdampak setelah gelombang surut.",
-        "Siapkan peralatan darurat dan perlengkapan evakuasi untuk setiap keluarga.",
-      ],
-    },
-    Tsunami: {
-      color: "bg-indigo-200",
-      image: "path/to/tsunami.jpg",
-      recommendations: [
-        "1. Membangun sistem peringatan dini tsunami di daerah rawan.",
-        "Identifikasi dan buat rencana evakuasi untuk komunitas pesisir.",
-        "Segera evakuasi ke daerah tinggi saat ada peringatan tsunami.",
-        "Jangan kembali ke pantai sampai diberitahu aman oleh pihak berwenang.",
-        "Lindungi diri dari debu dan kontaminasi setelah tsunami.",
-        "Laporkan kerusakan infrastruktur dan kebutuhan bantuan kepada pihak berwenang.",
-        "Berikan dukungan kepada komunitas yang terdampak untuk proses pemulihan.",
-      ],
-    },
-    Longsor: {
-      color: "bg-green-200",
-      image: "path/to/landslide.jpg",
-      recommendations: [
-        "1. Membangun tembok penahan dan drainase untuk mencegah longsor.",
-        "Melakukan survei geologi untuk mengidentifikasi daerah rawan longsor.",
-        "Evakuasi segera jika ada tanda-tanda longsor (retakan tanah, suara gemuruh).",
-        "Hindari area di bawah lereng yang curam saat hujan deras.",
-        "Laporkan kerusakan ke otoritas setempat setelah longsor terjadi.",
-        "Berikan informasi kepada masyarakat tentang cara mengenali tanda-tanda longsor.",
-        "Siapkan rencana evakuasi yang jelas untuk daerah yang berisiko longsor.",
-      ],
-    },
-    Gempa_Bumi: {
-      color: "bg-yellow-200",
-      image: "path/to/earthquake.jpg",
-      recommendations: [
-        "1. Mengembangkan bangunan tahan gempa sesuai dengan standar yang ditetapkan.",
-        "Melakukan latihan evakuasi secara berkala untuk masyarakat.",
-        "Berlindung di bawah meja atau struktur yang kuat saat gempa terjadi.",
-        "Jangan menggunakan lift dan menjauh dari jendela saat gempa.",
-        "Periksa diri dan orang di sekitar untuk cedera setelah gempa.",
-        "Laporkan kerusakan dan kebutuhan bantuan kepada pihak berwenang.",
-        "Siapkan kit darurat yang mencakup makanan, air, dan perlengkapan pertolongan pertama.",
-      ],
-    },
-    Gunung_Api: {
-      color: "bg-red-200",
-      image: "path/to/volcano.jpg",
-      recommendations: [
-        "1. Memantau aktivitas gunung berapi melalui lembaga geologi secara berkala.",
-        "Mengembangkan rencana evakuasi untuk masyarakat sekitar gunung berapi.",
-        "Ikuti instruksi evakuasi dan pergi ke tempat yang aman saat letusan terjadi.",
-        "Lindungi pernapasan dari abu vulkanik dengan masker atau kain.",
-        "Hindari mengonsumsi makanan yang terkontaminasi debu vulkanik setelah letusan.",
-        "Laporkan kerusakan dan kebutuhan bantuan kepada pihak berwenang.",
-        "Berikan dukungan kepada masyarakat yang terkena dampak dalam proses pemulihan.",
-      ],
-    },
->>>>>>> 36127b5101d1c9909793f70b1393549430a89078
   };
 
   return (
@@ -399,62 +264,11 @@ const Hasil = () => {
       }}
       className="mt-6 px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
     >
-<<<<<<< HEAD
       Kembali ke Beranda
     </button>
   </div>
 </motion.div>
 
-=======
-      <div className="w-full h-full flex flex-col justify-center items-center px-1 mt-1">
-        <div className="w-full max-w-lg bg-blue-900 p-6 rounded-lg shadow-lg mt-8">
-          <h2 className="text-xl font-bold mb-4 text-white text-center">
-            Disaster Risk Assessment Results
-          </h2>
-
-          <h3 className="text-lg font-bold text-white">
-            Location: {locationData}
-          </h3>
-          <p className="text-white">
-            Current Season:{" "}
-            <span className="font-bold">{isRainySeason ? "Rainy" : "Dry"}</span>
-          </p>
-        </div>
-
-        <div className="w-full max-w-5xl mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {Object.entries(resultCF).map(([disaster, riskValue]) => (
-            <div
-              key={disaster}
-              className="relative group card shadow-xl bg-gray-600 overflow-hidden rounded-lg transform transition-transform hover:scale-105"
-            >
-              <figure>
-                <img
-                  src={
-                    recommendationsPerDisaster[disaster]?.image ||
-                    "path/to/default.jpg"
-                  }
-                  alt={disaster}
-                  className="w-full h-40 object-cover"
-                />
-              </figure>
-              <div className="absolute bottom-0 left-0 right-0 bg-white p-4 transition-all transform translate-y-full group-hover:translate-y-0">
-                <h2 className="text-lg font-bold text-gray-700">
-                  {disaster} ({(riskValue * 100).toFixed(1)}%)
-                </h2>
-                <ul className="mt-2 text-sm text-gray-600">
-                  {recommendationsPerDisaster[disaster]?.recommendations.map(
-                    (rec, idx) => (
-                      <li key={idx}>- {rec}</li>
-                    )
-                  )}
-                </ul>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </motion.div>
->>>>>>> 36127b5101d1c9909793f70b1393549430a89078
   );
 };
 
