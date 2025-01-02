@@ -11,7 +11,7 @@ const Prediction = () => {
 
   useEffect(() => {
     const savedUserLoc = JSON.parse(localStorage.getItem("dataLocation"));
-    if (savedUserLoc.trim() !== "") {
+    if (savedUserLoc === undefined) {
       setLocation(savedUserLoc);
     }
   }, []);
