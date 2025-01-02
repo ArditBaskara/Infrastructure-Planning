@@ -1,12 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { DataContext } from "../DataContext";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import bg from "../assets/bg_6.png";
 
 const Morfologi = () => {
   const [step, setStep] = useState(6);
-  const [checkboxStates, setCheckboxStates] = useState(Array(6).fill(false));
   const navigate = useNavigate();
+  const { data, setData } = useContext(DataContext);
+  const [dataPage, setDataP] = useState([]);
+  const [checkboxStates, setCheckboxStates] = useState([]);
+  const [rangeValues, setRangeValues] = useState([]);
+  
+  useEffect(() => {
+    if (data && data[0]) {
+      setDataP(data[0]);
+      try {
+        const savedCheckboxStates = JSON.parse(localStorage.getItem("checkboxMorfologi"));
+        const savedUserStates = JSON.parse(localStorage.getItem("userMorfologi"));
+        if (savedCheckboxStates && Array.isArray(savedCheckboxStates)) {
+          setCheckboxStates(savedCheckboxStates);
+          if (savedUserStates && Array.isArray(savedUserStates)) {
+            setRangeValues(savedUserStates);
+          }
+        } else {
+          setCheckboxStates(Array(Object.keys(data[0]).length - 1).fill(false));
+          setRangeValues(Array(Object.keys(data[0]).length - 1).fill(1));
+        }
+      } catch (error) {
+        console.log("Data baru.");
+        setCheckboxStates(Array(Object.keys(data[0]).length - 1).fill(false));
+        setRangeValues(Array(Object.keys(data[0]).length - 1).fill(1));
+      }
+    }
+  }, [data]);
+
+  const handleRangeChange = (index, value) => {
+    const newRangeValues = [...rangeValues];
+    newRangeValues[index] = value;
+    setRangeValues(newRangeValues);
+  };
+
+  const getRangeLabel = (value) => {
+    if (value <= 0.1) return "Kurang Yakin";
+    if (value <= 0.5) return "Cukup Yakin";
+    return "Sangat Yakin";
+  };
 
   const handleCheckboxChange = (index) => {
     const newStates = [...checkboxStates];
@@ -15,12 +54,16 @@ const Morfologi = () => {
   };
 
   const handleNextStep = () => {
-    navigate("/Ekstrem");
+    navigate("/Tsunami");
+    localStorage.setItem("checkboxMorfologi", JSON.stringify(checkboxStates));
+    localStorage.setItem("userMorfologi", JSON.stringify(rangeValues));
   };
 
   const handlePrevStep = () => {
     setStep(4);
     navigate("/Pantai");
+    localStorage.setItem("checkboxMorfologi", JSON.stringify(checkboxStates));
+    localStorage.setItem("userMorfologi", JSON.stringify(rangeValues));
   };
 
   return (
@@ -49,27 +92,41 @@ const Morfologi = () => {
             <h2 className="text-xl md:text-2xl font-bold mb-4 text-white text-center">Karakteristik Morfologi</h2>
             <form className="space-y-4">
               <div className="space-y-3">
-                {[
-                  "Apakah wilayah ini memiliki bentuk morfologi yang bergelombang?",
-                  "Apakah terdapat lembah di sekitar area ini?",
-                  "Apakah wilayah ini merupakan dataran tinggi?",
-                  "Apakah area ini memiliki banyak bukit kecil?",
-                  "Apakah terdapat sungai yang memengaruhi bentukan lahan di wilayah ini?",
-                  "Apakah proses geomorfologi aktif di area ini?",
-                ].map((question, index) => (
-                  <label
-                    key={index}
-                    className="flex items-start space-x-3 text-white cursor-pointer flex-wrap sm:flex-nowrap"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checkboxStates[index]}
-                      onChange={() => handleCheckboxChange(index)}
-                      className="w-4 h-4 rounded border-green-600 focus:ring-green-500 mt-1"
-                    />
-                    <span className="text-sm md:text-lg leading-tight">{question}</span>
-                  </label>
-                ))}
+              {Object.entries(dataPage).map((question, index) => {
+                if (index === Object.entries(dataPage).length - 1) {
+                  return null;  // Abaikan elemen terakhir
+                }
+                
+                return (
+                  <div key={index}>
+                    <label className="flex items-start space-x-3 text-white cursor-pointer flex-wrap sm:flex-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={checkboxStates[index]}
+                        onChange={() => handleCheckboxChange(index)}
+                        className="w-4 h-4 rounded border-purple-600 focus:ring-purple-500 mt-1"
+                      />
+                      <span className="text-sm md:text-lg leading-tight">{question[1]}</span>
+                    </label>
+                    
+                    {/* Jika checkbox dicentang, tampilkan range */}
+                    {checkboxStates[index] && (
+                              <div>
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max="1"
+                                  step="0.1"
+                                  value={rangeValues[index]}
+                                  onChange={(e) => handleRangeChange(index, e.target.value)}
+                                  className="w-full mt-2"
+                                />
+                                <div className="mt-2">{getRangeLabel(rangeValues[index])}</div>
+                              </div>
+                            )}
+                          </div>
+                        );
+              })}
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button

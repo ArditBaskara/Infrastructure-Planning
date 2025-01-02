@@ -17,12 +17,14 @@ import Seismik from "./pages/Seismik";
 import Vulkanik from "./pages/Vulkanik"
 import Geologi from "./pages/Geologi"
 import Hasil from "./pages/Hasil"
+import DataProvider from "./DataContext";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
     <AnimatePresence>
+      <DataProvider>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Hero />} />
         <Route path="/prediction" element={<Prediction />} />
@@ -31,15 +33,11 @@ const AnimatedRoutes = () => {
         <Route path="/Lahan" element={<Lahan />} />
         <Route path="/Pantai" element={<Pantai />} />
         <Route path="/Morfologi" element={<Morfologi />} />
-        <Route path="/Ekstrem" element={<Ekstrem />} />
         <Route path="/Tsunami" element={<Tsunami />} />
-        <Route path="/Vegetasi" element={<Vegetasi />} />
-        <Route path="/Longsor" element={<Longsor />} />
         <Route path="/Seismik" element={<Seismik />} />
-        <Route path="/Vulkanik" element={<Vulkanik />} />
-        <Route path="/Geologi" element={<Geologi />} />
         <Route path="/Hasil" element={<Hasil />} />
       </Routes>
+      </DataProvider>
     </AnimatePresence>
   );
 };

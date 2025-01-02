@@ -1,12 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { DataContext } from "../DataContext";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import bg from "../assets/bg_4.png";
 
 const Lahan = () => {
   const [step, setStep] = useState(4);
-  const [checkboxStates, setCheckboxStates] = useState(Array(12).fill(false));
   const navigate = useNavigate();
+  const { data, setData } = useContext(DataContext);
+  const [dataPage, setDataP] = useState([]);
+  const [checkboxStates, setCheckboxStates] = useState([]);
+  const [rangeValues, setRangeValues] = useState([]);
+  
+  useEffect(() => {
+    if (data && data[4]) {
+      setDataP(data[4]);
+      try {
+        const savedCheckboxStates = JSON.parse(localStorage.getItem("checkboxLahan"));
+        const savedUserStates = JSON.parse(localStorage.getItem("userLahan"));
+        if (savedCheckboxStates && Array.isArray(savedCheckboxStates)) {
+          setCheckboxStates(savedCheckboxStates);
+          if (savedUserStates && Array.isArray(savedUserStates)) {
+            setRangeValues(savedUserStates);
+          }
+        } else {
+          setCheckboxStates(Array(Object.keys(data[4]).length - 1).fill(false));
+          setRangeValues(Array(Object.keys(data[4]).length - 1).fill(1));
+        }
+      } catch (error) {
+        console.log("Data baru.");
+        setCheckboxStates(Array(Object.keys(data[4]).length - 1).fill(false));
+        setRangeValues(Array(Object.keys(data[4]).length - 1).fill(1));
+      }
+    }
+  }, [data]);
+
+  const handleRangeChange = (index, value) => {
+    const newRangeValues = [...rangeValues];
+    newRangeValues[index] = value;
+    setRangeValues(newRangeValues);
+  };
+
+  const getRangeLabel = (value) => {
+    if (value <= 0.1) return "Kurang Yakin";
+    if (value <= 0.5) return "Cukup Yakin";
+    return "Sangat Yakin";
+  };
 
   const handleCheckboxChange = (index) => {
     const newStates = [...checkboxStates];
@@ -16,11 +55,15 @@ const Lahan = () => {
 
   const handleNextStep = () => {
     navigate("/Pantai");
+    localStorage.setItem("checkboxLahan", JSON.stringify(checkboxStates));
+    localStorage.setItem("userLahan", JSON.stringify(rangeValues));
   };
 
   const handlePrevStep = () => {
     setStep(1);
     navigate("/Sungai");
+    localStorage.setItem("checkboxLahan", JSON.stringify(checkboxStates));
+    localStorage.setItem("userLahan", JSON.stringify(rangeValues));
   };
 
   return (
@@ -47,33 +90,41 @@ const Lahan = () => {
             <h2 className="text-xl md:text-2xl font-bold mb-4 text-white text-center">Karakteristik Lahan dan Lereng</h2>
             <form className="space-y-4">
               <div className="space-y-3">
-                {[
-                  "Apakah area ini memiliki tipe utama bentang lahan berupa perbukitan atau lereng?",
-                  "Apakah area ini merupakan tipe bentang lahan yang rentan terhadap erosi?",
-                  "Apakah lokasi ini dekat dengan kaki gunung?",
-                  "Apakah lokasi ini berada di teras atau perbukitan?",
-                  "Apakah material pembentuk teras di lokasi ini cukup longgar?",
-                  "Apakah lokasi ini dekat dengan tebing teras?",
-                  "Apakah lereng di lokasi ini memiliki ketinggian yang signifikan?",
-                  "Apakah sudut kemiringan lereng di lokasi ini cukup tajam?",
-                  "Apakah tipe lereng di area ini curam?",
-                  "Apakah terdapat bagian cembung di sudut lereng ini?",
-                  "Apakah proses pembentukan lereng di area ini aktif dan berkelanjutan?",
-                  "Apakah lokasi ini berada pada lereng atau area curam?",
-                ].map((question, index) => (
-                  <label
-                    key={index}
-                    className="flex items-start space-x-3 text-white cursor-pointer flex-wrap sm:flex-nowrap"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checkboxStates[index]}
-                      onChange={() => handleCheckboxChange(index)}
-                      className="w-4 h-4 rounded border-purple-600 focus:ring-purple-500 mt-1"
-                    />
-                    <span className="text-sm md:text-lg leading-tight">{question}</span>
-                  </label>
-                ))}
+              {Object.entries(dataPage).map((question, index) => {
+                if (index === Object.entries(dataPage).length - 1) {
+                  return null;  // Abaikan elemen terakhir
+                }
+                
+                return (
+                  <div key={index}>
+                    <label className="flex items-start space-x-3 text-white cursor-pointer flex-wrap sm:flex-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={checkboxStates[index]}
+                        onChange={() => handleCheckboxChange(index)}
+                        className="w-4 h-4 rounded border-purple-600 focus:ring-purple-500 mt-1"
+                      />
+                      <span className="text-sm md:text-lg leading-tight">{question[1]}</span>
+                    </label>
+                    
+                    {/* Jika checkbox dicentang, tampilkan range */}
+                    {checkboxStates[index] && (
+                              <div>
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max="1"
+                                  step="0.1"
+                                  value={rangeValues[index]}
+                                  onChange={(e) => handleRangeChange(index, e.target.value)}
+                                  className="w-full mt-2"
+                                />
+                                <div className="mt-2">{getRangeLabel(rangeValues[index])}</div>
+                              </div>
+                            )}
+                          </div>
+                        );
+              })}
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button

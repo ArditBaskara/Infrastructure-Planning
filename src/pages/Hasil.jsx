@@ -1,4 +1,6 @@
-import React from "react";
+import React, { createContext, useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import db from "../firebaseConfig";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import bg from "../assets/bg_14.png";
@@ -15,6 +17,127 @@ const getRiskLevel = (responses) => {
 };
 
 const Hasil = () => {
+  const [data, setData] = useState([]);
+  const [listCF, setCF] = useState([]);
+  const savedCF = [];
+  const pickCF = {};
+  const userCF = {};
+  const [resultCF, setResultCF] = useState({});
+
+  const savedWeather = JSON.parse(localStorage.getItem("checkboxWeather"));
+  const savedSungai = JSON.parse(localStorage.getItem("checkboxSungai"));
+  const savedLahan = JSON.parse(localStorage.getItem("checkboxLahan"));
+  const savedPantai = JSON.parse(localStorage.getItem("checkboxPantai"));
+  const savedMorfologi = JSON.parse(localStorage.getItem("checkboxMorfologi"));
+  const savedTsunami = JSON.parse(localStorage.getItem("checkboxTsunami"));
+  const savedSeismik = JSON.parse(localStorage.getItem("checkboxSeismik"));
+  const savedData = [
+    savedMorfologi,
+    savedSungai,
+    savedPantai,
+    savedSeismik,
+    savedLahan,
+    savedTsunami,
+    savedWeather
+  ];
+  const userData = [
+    JSON.parse(localStorage.getItem("userMorfologi")),
+    JSON.parse(localStorage.getItem("userSungai")),
+    JSON.parse(localStorage.getItem("userPantai")),
+    JSON.parse(localStorage.getItem("userSeismik")),
+    JSON.parse(localStorage.getItem("userLahan")),
+    JSON.parse(localStorage.getItem("userTsunami"))
+  ];
+  // A:0  -  B:1   -  G:2  -  J:3  -  L:4  -  T:5 
+  const KB = {
+    Banjir: [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7]],
+    Gelombang_Tinggi: [[2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6]],
+    Tsunami: [[2, 4], [5, 1], [5, 2], [5, 3], [5, 4], [5, 5]],
+    Longsor: [[1, 5], [4, 1], [4, 2], [4, 3], [4, 4]],
+    Gempa_Bumi: [[3, 1], [3, 2], [3, 3], [3, 4], [3, 5]],
+    Gunung_Api: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5]]
+  };
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const colRef = collection(db, "cf-list");
+        const snapshot = await getDocs(colRef);
+
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setData(data);
+        
+        for (let i = 0; i < savedData.length; i++) {
+          for (let j = 0; j < savedData[i].length; j++) {
+            if(savedData[i][j]){
+              savedCF.push(data[i][j+1]);
+              Object.assign(pickCF, {
+                [`${i},${j + 1}`]: data[i][j + 1]
+              });
+              Object.assign(userCF, {
+                [`${i},${j + 1}`]: userData[i][j]
+              });
+            }
+          }
+        }
+        setCF(savedCF.slice(0, Math.ceil(savedCF.length / 2)));
+
+        let cf_total = 0; 
+        let cfResults = {};
+        let result = 0;
+        
+        console.log(pickCF);
+        console.log(userCF);
+
+        for (let key in KB) {
+          for (let i in KB[key]) {
+            if (pickCF.hasOwnProperty(KB[key][i])) {
+              if (cfResults[key] === undefined) {
+                result = pickCF[KB[key][i]] + parseFloat(userCF[KB[key][i]]) * (1 - pickCF[KB[key][i]]);
+                result = Math.max(-1, Math.min(1, result));
+
+                Object.assign(cfResults, {
+                  [`${key}`]: result
+                });
+              } else {
+                result = pickCF[KB[key][i]] + parseFloat(userCF[KB[key][i]]) * (1 - pickCF[KB[key][i]]);
+                result = Math.max(-1, Math.min(1, result));
+
+                cf_total = 0;
+                cf_total = cfResults[key] + result * (1 - cfResults[key]);
+                Object.assign(cfResults, {
+                  [`${key}`]: cf_total
+                });
+              }
+            }
+          }
+        }
+
+        setResultCF(cfResults);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    getData();
+    
+  }, []);
+
+  let cf_total = 0;
+
+  for (let i = 0; i < listCF.length; i++) {
+    if (cf_total === 0) {
+      cf_total = listCF[i]; 
+    } else {
+      cf_total = cf_total + listCF[i] * (1 - cf_total);
+    }
+  }
+
+
   const location = useLocation();
   const { 
     isRainySeason, 
@@ -32,7 +155,7 @@ const Hasil = () => {
   } = location.state || {};
 
   const responses = {
-    sungai: sungaiResponses,
+    sungai: "sungaiResponses",
     lahan: lahanResponses, 
     pantai: pantaiResponses,
     morfologi: morfologiResponses,
@@ -44,6 +167,11 @@ const Hasil = () => {
     vulkanik: vulkanikResponses,
     geologi: geologiResponses,
   };
+  
+  
+
+  
+  
 
   const riskLevel = getRiskLevel(responses);
 
@@ -104,6 +232,11 @@ const Hasil = () => {
 
             <div className="space-y-3">
               <h3 className="text-lg md:text-xl font-bold text-white">Overall Risk Level: <span className={`font-bold ${riskColors[riskLevel]}`}>{riskLevel}</span></h3>
+              {Object.entries(resultCF).map(([key, value], index) => (
+                <h3 key={index}>
+                  {key}: {(value * 100).toFixed(1)}%
+                </h3>
+              ))}            
             </div>
 
             <div className="space-y-3">

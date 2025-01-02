@@ -1,10 +1,10 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import bgImage from "/src/assets/bgg.jpg";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar"; // Import Navbar
+import Navbar from "../components/Navbar"; 
 
 // Full-screen background container
 const HeroContainer = styled.div`
