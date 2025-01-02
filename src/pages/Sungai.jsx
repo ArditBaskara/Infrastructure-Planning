@@ -17,7 +17,9 @@ const Sungai = () => {
     if (data && data[1]) {
       setDataP(data[1]);
       try {
-        const savedCheckboxStates = JSON.parse(localStorage.getItem("checkboxSungai"));
+        const savedCheckboxStates = JSON.parse(
+          localStorage.getItem("checkboxSungai")
+        );
         const savedUserStates = JSON.parse(localStorage.getItem("userSungai"));
         if (savedCheckboxStates && Array.isArray(savedCheckboxStates)) {
           setCheckboxStates(savedCheckboxStates);
@@ -43,8 +45,9 @@ const Sungai = () => {
   };
 
   const getRangeLabel = (value) => {
-    if (value <= 0.1) return "Kurang Yakin";
+    if (value <= 0.2) return "Kurang Yakin";
     if (value <= 0.5) return "Cukup Yakin";
+    if (value <= 0.9) return "Yakin Ajah";
     return "Sangat Yakin";
   };
 
@@ -52,7 +55,10 @@ const Sungai = () => {
     const newStates = [...checkboxStates];
     newStates[index] = !newStates[index];
     setCheckboxStates(newStates);
-    console.log("Saved1 : ", JSON.parse(localStorage.getItem("checkboxWeather")));
+    console.log(
+      "Saved1 : ",
+      JSON.parse(localStorage.getItem("checkboxWeather"))
+    );
   };
 
   const handleNextStep = () => {
@@ -63,7 +69,7 @@ const Sungai = () => {
 
   const handlePrevStep = () => {
     setStep(1);
-    navigate("/Weather");
+    navigate("/prediction");
     localStorage.setItem("checkboxSungai", JSON.stringify(checkboxStates));
     localStorage.setItem("userSungai", JSON.stringify(rangeValues));
   };
@@ -88,44 +94,56 @@ const Sungai = () => {
           </div>
 
           <div className="w-full max-w-lg bg-purple-900 p-6 rounded-lg shadow-lg mt-8 sm:mt-6 md:mt-4 lg:mt-4 xl:mt-0 overflow-y-auto max-h-screen">
-            <h2 className="text-xl md:text-2xl font-bold mb-4 text-white text-center">Kondisi Sungai dan Ngarai</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-4 text-white text-center">
+              Kondisi Sungai dan Ngarai
+            </h2>
             <form className="space-y-4">
               <div className="space-y-3">
-              {Object.entries(dataPage).map((question, index) => {
-              if (index === Object.entries(dataPage).length - 1) {
-                return null;  // Abaikan elemen terakhir
-              }
+                {Object.entries(dataPage).map((question, index) => {
+                  if (index === Object.entries(dataPage).length - 1) {
+                    return null; // Abaikan elemen terakhir
+                  }
 
-              return (
-                <div key={index}>
-                  <label className="flex items-start space-x-3 text-white cursor-pointer flex-wrap sm:flex-nowrap">
-                    <input
-                      type="checkbox"
-                      checked={checkboxStates[index]}
-                      onChange={() => handleCheckboxChange(index)}
-                      className="w-4 h-4 rounded border-purple-600 focus:ring-purple-500 mt-1"
-                    />
-                    <span className="text-sm md:text-lg leading-tight">{question[1]}</span>
-                  </label>
-                  
-                  {/* Jika checkbox dicentang, tampilkan range */}
-                  {checkboxStates[index] && (
-                            <div>
-                              <input
-                                type="range"
-                                min="0"
-                                max="1"
-                                step="0.1"
-                                value={rangeValues[index]}
-                                onChange={(e) => handleRangeChange(index, e.target.value)}
-                                className="w-full mt-2"
-                              />
-                              <div className="mt-2">{getRangeLabel(rangeValues[index])}</div>
-                            </div>
-                          )}
+                  return (
+                    <div key={index}>
+                      <label className="flex items-start space-x-3 text-white cursor-pointer flex-wrap sm:flex-nowrap">
+                        <input
+                          type="checkbox"
+                          checked={checkboxStates[index]}
+                          onChange={() => handleCheckboxChange(index)}
+                          className="w-4 h-4 rounded border-purple-600 focus:ring-purple-500 mt-1"
+                        />
+                        <span className="text-sm md:text-lg leading-tight">
+                          {question[1]}
+                        </span>
+                      </label>
+
+                      {/* Jika checkbox dicentang, tampilkan range */}
+                      {checkboxStates[index] && (
+                        <div>
+                          <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.1"
+                            value={rangeValues[index]}
+                            onChange={(e) =>
+                              handleRangeChange(index, e.target.value)
+                            }
+                            className="w-full mt-1"
+                          />
+                          <div className="mt-0 flex items-center">
+                            <p>Seberapa yakin Kamu?</p>{" "}
+                            <p className="text-red-200 font-bold">
+                              {getRangeLabel(rangeValues[index])}
+                            </p>
+                          </div>
+                          <hr className="mt-2 my-4 border-gray-300" />
                         </div>
-                      );
-                    })}
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
