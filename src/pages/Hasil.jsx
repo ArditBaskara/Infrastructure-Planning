@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import db from "../firebaseConfig";
 import { useLocation } from "react-router-dom";
@@ -48,7 +48,7 @@ const Hasil = () => {
     JSON.parse(localStorage.getItem("userLahan")),
     JSON.parse(localStorage.getItem("userTsunami"))
   ];
-  // A:0  -  B:1   -  G:2  -  J:3  -  L:4  -  T:5 
+
   const KB = {
     Banjir: [[1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7]],
     Gelombang_Tinggi: [[2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6]],
@@ -70,11 +70,11 @@ const Hasil = () => {
         }));
 
         setData(data);
-        
+
         for (let i = 0; i < savedData.length; i++) {
           for (let j = 0; j < savedData[i].length; j++) {
-            if(savedData[i][j]){
-              savedCF.push(data[i][j+1]);
+            if (savedData[i][j]) {
+              savedCF.push(data[i][j + 1]);
               Object.assign(pickCF, {
                 [`${i},${j + 1}`]: data[i][j + 1]
               });
@@ -86,12 +86,8 @@ const Hasil = () => {
         }
         setCF(savedCF.slice(0, Math.ceil(savedCF.length / 2)));
 
-        let cf_total = 0; 
         let cfResults = {};
         let result = 0;
-        
-        console.log(pickCF);
-        console.log(userCF);
 
         for (let key in KB) {
           for (let i in KB[key]) {
@@ -101,17 +97,13 @@ const Hasil = () => {
                 result = Math.max(-1, Math.min(1, result));
 
                 Object.assign(cfResults, {
-                  [`${key}`]: result
+                  [key]: result
                 });
               } else {
                 result = pickCF[KB[key][i]] + parseFloat(userCF[KB[key][i]]) * (1 - pickCF[KB[key][i]]);
                 result = Math.max(-1, Math.min(1, result));
 
-                cf_total = 0;
-                cf_total = cfResults[key] + result * (1 - cfResults[key]);
-                Object.assign(cfResults, {
-                  [`${key}`]: cf_total
-                });
+                cfResults[key] = cfResults[key] + result * (1 - cfResults[key]);
               }
             }
           }
@@ -124,90 +116,79 @@ const Hasil = () => {
       }
     };
     getData();
-    
+
   }, []);
-
-  let cf_total = 0;
-
-  for (let i = 0; i < listCF.length; i++) {
-    if (cf_total === 0) {
-      cf_total = listCF[i]; 
-    } else {
-      cf_total = cf_total + listCF[i] * (1 - cf_total);
-    }
-  }
-
 
   const location = useLocation();
   const { 
     isRainySeason, 
-    sungaiResponses,
-    lahanResponses,
-    pantaiResponses,
-    morfologiResponses, 
-    ekstremResponses,
-    tsunamiResponses,
-    vegetasiResponses,
-    longsorResponses,
-    seismikResponses,
-    vulkanikResponses,
-    geologiResponses,
+    locationName
   } = location.state || {};
 
-  const responses = {
-    sungai: "sungaiResponses",
-    lahan: lahanResponses, 
-    pantai: pantaiResponses,
-    morfologi: morfologiResponses,
-    ekstrem: ekstremResponses,
-    tsunami: tsunamiResponses,
-    vegetasi: vegetasiResponses,
-    longsor: longsorResponses,
-    seismik: seismikResponses, 
-    vulkanik: vulkanikResponses,
-    geologi: geologiResponses,
-  };
-  
-  
-
-  
-  
-
-  const riskLevel = getRiskLevel(responses);
-
-  const riskColors = {
-    "Very High": "text-red-500",
-    "High": "text-orange-500", 
-    "Moderate": "text-yellow-500",
-    "Low": "text-green-500"
-  };
-
-  const recommendations = {
-    "Very High": [
-      "Perform comprehensive hazard and risk assessments",
-      "Develop robust early warning systems", 
-      "Conduct regular disaster preparedness drills",
-      "Strengthen critical infrastructure to withstand extreme events",
-      "Consider relocation of vulnerable populations and assets"  
-    ],
-    "High": [
-      "Assess and reinforce key infrastructure",
-      "Establish emergency response and evacuation plans", 
-      "Increase public awareness of disaster risks",
-      "Implement nature-based solutions for risk reduction where feasible"
-    ],
-    "Moderate": [
-      "Incorporate disaster risk into land-use planning",
-      "Promote community-based disaster risk management", 
-      "Invest in resilient construction practices",
-      "Maintain and upgrade drainage and flood control systems"
-    ],
-    "Low": [
-      "Integrate risk considerations into development projects",
-      "Enforce building codes and zoning regulations",
-      "Monitor hazards and maintain updated contingency plans", 
-      "Foster a culture of safety and preparedness" 
-    ]
+  const recommendationsPerDisaster = {
+    Banjir: {
+      color: "bg-blue-200",
+      image: "path/to/flood.jpg",
+      recommendations: ["Pastikan adanya sistem drainase yang baik dan terawat.", "Membangun tanggul dan penampungan air untuk mengurangi risiko banjir.", "Lakukan reboisasi di daerah hulu sungai untuk menjaga keseimbangan ekosistem.","Evakuasi ke daerah yang lebih tinggi saat banjir terjadi.",
+    "Simpan makanan dan air bersih dalam kemasan kedap udara.",
+    "Hindari mengkonsumsi makanan dan air yang terkontaminasi setelah banjir.",
+    "Laporkan kerusakan dan kebutuhan bantuan kepada otoritas setempat."]
+    },
+    Gelombang_Tinggi: {
+      color: "bg-teal-200",
+      image: "path/to/high-waves.jpg",
+      recommendations: ["Pasang peringatan dini untuk masyarakat pesisir terkait potensi gelombang tinggi.",
+    "Membangun infrastruktur yang tahan gelombang tinggi, seperti penahan gelombang.",
+    "Evakuasi ke tempat yang lebih aman saat gelombang tinggi terjadi.",
+    "Hindari berada di dekat pantai atau tepi laut saat peringatan diberikan.",
+    "Ikuti instruksi dari otoritas lokal terkait keamanan dan evakuasi.",
+    "Lakukan penilaian kerusakan dan bantu masyarakat yang terdampak setelah gelombang surut.",
+    "Siapkan peralatan darurat dan perlengkapan evakuasi untuk setiap keluarga."]
+    },
+    Tsunami: {
+      color: "bg-indigo-200",
+      image: "path/to/tsunami.jpg",
+      recommendations: ["1. Membangun sistem peringatan dini tsunami di daerah rawan.",
+  "Identifikasi dan buat rencana evakuasi untuk komunitas pesisir.",
+  "Segera evakuasi ke daerah tinggi saat ada peringatan tsunami.",
+  "Jangan kembali ke pantai sampai diberitahu aman oleh pihak berwenang.",
+  "Lindungi diri dari debu dan kontaminasi setelah tsunami.",
+  "Laporkan kerusakan infrastruktur dan kebutuhan bantuan kepada pihak berwenang.",
+  "Berikan dukungan kepada komunitas yang terdampak untuk proses pemulihan."]
+    },
+    Longsor: {
+      color: "bg-green-200",
+      image: "path/to/landslide.jpg",
+      recommendations: ["1. Membangun tembok penahan dan drainase untuk mencegah longsor.",
+    "Melakukan survei geologi untuk mengidentifikasi daerah rawan longsor.",
+    "Evakuasi segera jika ada tanda-tanda longsor (retakan tanah, suara gemuruh).",
+    "Hindari area di bawah lereng yang curam saat hujan deras.",
+    "Laporkan kerusakan ke otoritas setempat setelah longsor terjadi.",
+    "Berikan informasi kepada masyarakat tentang cara mengenali tanda-tanda longsor.",
+    "Siapkan rencana evakuasi yang jelas untuk daerah yang berisiko longsor."]
+    },
+    Gempa_Bumi: {
+      color: "bg-yellow-200",
+      image: "path/to/earthquake.jpg",
+      recommendations: ["1. Mengembangkan bangunan tahan gempa sesuai dengan standar yang ditetapkan.",
+    "Melakukan latihan evakuasi secara berkala untuk masyarakat.",
+    "Berlindung di bawah meja atau struktur yang kuat saat gempa terjadi.",
+    "Jangan menggunakan lift dan menjauh dari jendela saat gempa.",
+    "Periksa diri dan orang di sekitar untuk cedera setelah gempa.",
+    "Laporkan kerusakan dan kebutuhan bantuan kepada pihak berwenang.",
+    "Siapkan kit darurat yang mencakup makanan, air, dan perlengkapan pertolongan pertama."]
+    },
+    Gunung_Api: {
+      color: "bg-red-200",
+      image: "path/to/volcano.jpg",
+      recommendations: ["1. Memantau aktivitas gunung berapi melalui lembaga geologi secara berkala.",
+    "Mengembangkan rencana evakuasi untuk masyarakat sekitar gunung berapi.",
+    "Ikuti instruksi evakuasi dan pergi ke tempat yang aman saat letusan terjadi.",
+    "Lindungi pernapasan dari abu vulkanik dengan masker atau kain.",
+    "Hindari mengonsumsi makanan yang terkontaminasi debu vulkanik setelah letusan.",
+    "Laporkan kerusakan dan kebutuhan bantuan kepada pihak berwenang.",
+    "Berikan dukungan kepada masyarakat yang terkena dampak dalam proses pemulihan."]
+    }
   };
 
   return (
@@ -221,48 +202,38 @@ const Hasil = () => {
     >
       <div className="w-full h-full flex flex-col justify-center items-center px-1 mt-1">
 
-        <div className="w-full max-w-lg bg-blue-900 p-6 rounded-lg shadow-lg mt-8 sm:mt-6 md:mt-4 lg:mt-4 xl:mt-0">
-          <h2 className="text-xl md:text-2xl font-bold mb-4 text-white text-center">Disaster Risk Assessment Results</h2>
+        <div className="w-full max-w-lg bg-blue-900 p-6 rounded-lg shadow-lg mt-8">
+          <h2 className="text-xl font-bold mb-4 text-white text-center">Disaster Risk Assessment Results</h2>
 
-          <div className="space-y-4">
-            <div className="space-y-3">
-              <h3 className="text-lg md:text-xl font-bold text-white">Location: {location.state?.locationName || "Unknown"}</h3>
-              <p className="text-white">Current Season: <span className="font-bold">{isRainySeason ? "Rainy" : "Dry"}</span></p>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="text-lg md:text-xl font-bold text-white">Overall Risk Level: <span className={`font-bold ${riskColors[riskLevel]}`}>{riskLevel}</span></h3>
-              {Object.entries(resultCF).map(([key, value], index) => (
-                <h3 key={index}>
-                  {key}: {(value * 100).toFixed(1)}%
-                </h3>
-              ))}            
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="text-lg md:text-xl font-bold text-white">Recommendations:</h3>
-              <ul className="list-disc pl-6 text-white">
-                {recommendations[riskLevel].map((rec, index) => (
-                  <li key={index} className="mb-2">{rec}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          <h3 className="text-lg font-bold text-white">Location: {locationName || "Unknown"}</h3>
+          <p className="text-white">Current Season: <span className="font-bold">{isRainySeason ? "Rainy" : "Dry"}</span></p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 mt-8">
-          <button
-            onClick={() => window.history.back()}
-            className="w-full sm:w-auto mt-4 py-2 px-4 bg-blue-700 text-white rounded hover:bg-blue-800 transition-colors duration-200"
-          >
-            Kembali
-          </button>
-          <button
-            onClick={() => alert("Submitting results")}
-            className="w-full sm:w-auto mt-4 py-2 px-4 bg-blue-700 text-white rounded hover:bg-blue-800 transition-colors duration-200"
-          >
-            Submit
-          </button>
+        <div className="w-full max-w-5xl mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {Object.entries(resultCF).map(([disaster, riskValue]) => (
+            <div
+              key={disaster}
+              className="relative group card shadow-xl bg-gray-600 overflow-hidden rounded-lg transform transition-transform hover:scale-105"
+            >
+              <figure>
+                <img
+                  src={recommendationsPerDisaster[disaster]?.image || "path/to/default.jpg"}
+                  alt={disaster}
+                  className="w-full h-40 object-cover"
+                />
+              </figure>
+              <div className="absolute bottom-0 left-0 right-0 bg-white p-4 transition-all transform translate-y-full group-hover:translate-y-0">
+                <h2 className="text-lg font-bold text-gray-700">
+                  {disaster} ({(riskValue * 100).toFixed(1)}%)
+                </h2>
+                <ul className="mt-2 text-sm text-gray-600">
+                  {recommendationsPerDisaster[disaster]?.recommendations.map((rec, idx) => (
+                    <li key={idx}>- {rec}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </motion.div>
