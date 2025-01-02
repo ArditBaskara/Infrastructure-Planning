@@ -60,7 +60,7 @@ const Hero = () => {
             <HeroTitle>
               <TypeAnimation
                 sequence={[
-                  "Prediksi Bencana Alam Sistem Peringatan Dini Perencanaan Infrastruktur",
+                  "Sistem Pakar Diagnosa Kemungkinan Bencana Alam sebagai Sarana Upaya Perencanaan Infrastruktur",
                   2000,
                 ]}
                 speed={50}
@@ -73,8 +73,8 @@ const Hero = () => {
               transition={{ duration: 1 }}
             >
               <HeroSubtitle>
-                Sistem ini dirancang sebagai alat bantu dalam perencanaan dan
-                pengelolaan proyek infrastruktur serta pencegahan bencana.
+               Sistem ini dirancang sebagai alat bantu dalam perencanaan dan pengelolaan
+               proyek infrastruktur tahan bencana, berdasarkan informasi Geomorfologi dan Geologi.
               </HeroSubtitle>
             </motion.div>
             <motion.div

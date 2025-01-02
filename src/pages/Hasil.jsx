@@ -29,6 +29,7 @@ const Hasil = () => {
   const pickCF = {};
   const userCF = {};
   const [resultCF, setResultCF] = useState({});
+  const [locationData, setLocation] = useState("")
 
   const savedWeather = JSON.parse(localStorage.getItem("checkboxWeather"));
   const savedSungai = JSON.parse(localStorage.getItem("checkboxSungai"));
@@ -65,6 +66,7 @@ const Hasil = () => {
   };
 
   useEffect(() => {
+    setLocation(JSON.parse(localStorage.getItem("dataLocation")));
     const getData = async () => {
       try {
         const colRef = collection(db, "cf-list");
@@ -137,67 +139,71 @@ const Hasil = () => {
     Banjir: {
       color: "bg-blue-200",
       image: BanjirImage,
-      recommendations: ["Pastikan adanya sistem drainase yang baik dan terawat.", "Membangun tanggul dan penampungan air untuk mengurangi risiko banjir.", "Lakukan reboisasi di daerah hulu sungai untuk menjaga keseimbangan ekosistem.","Evakuasi ke daerah yang lebih tinggi saat banjir terjadi.",
-    "Simpan makanan dan air bersih dalam kemasan kedap udara.",
-    "Hindari mengkonsumsi makanan dan air yang terkontaminasi setelah banjir.",
-    "Laporkan kerusakan dan kebutuhan bantuan kepada otoritas setempat."]
+      recommendations: [
+        "Perbaiki atau bangun infrastruktur pengendalian banjir seperti tanggul dan waduk.",
+        "Tingkatkan kapasitas sistem drainase dengan membersihkan dan memperbaiki saluran yang tersumbat.",
+        "Lakukan reboisasi untuk meningkatkan daya serap air di wilayah hulu sungai.",
+        "Bangun area resapan dan sumur resapan untuk mengurangi limpasan air hujan.",
+        "Sosialisasikan langkah evakuasi kepada masyarakat di daerah rawan banjir."
+      ]
     },
     Gelombang_Tinggi: {
       color: "bg-teal-200",
       image: GelombangTinggiImage,
-      recommendations: ["Pasang peringatan dini untuk masyarakat pesisir terkait potensi gelombang tinggi.",
-    "Membangun infrastruktur yang tahan gelombang tinggi, seperti penahan gelombang.",
-    "Evakuasi ke tempat yang lebih aman saat gelombang tinggi terjadi.",
-    "Hindari berada di dekat pantai atau tepi laut saat peringatan diberikan.",
-    "Ikuti instruksi dari otoritas lokal terkait keamanan dan evakuasi.",
-    "Lakukan penilaian kerusakan dan bantu masyarakat yang terdampak setelah gelombang surut.",
-    "Siapkan peralatan darurat dan perlengkapan evakuasi untuk setiap keluarga."]
+      recommendations: [
+        "Bangun pemecah gelombang (breakwater) untuk melindungi wilayah pesisir dari dampak langsung.",
+        "Tanam mangrove di sepanjang pesisir untuk mengurangi dampak gelombang tinggi.",
+        "Pasang sistem peringatan dini yang memonitor perubahan tekanan udara dan kecepatan angin.",
+        "Hindari pembangunan infrastruktur penting di wilayah pesisir rawan.",
+        "Berikan edukasi kepada warga tentang tanda-tanda gelombang tinggi dan langkah mitigasinya."
+      ]
     },
     Tsunami: {
       color: "bg-indigo-200",
       image: TsunamiImage,
-      recommendations: ["1. Membangun sistem peringatan dini tsunami di daerah rawan.",
-  "Identifikasi dan buat rencana evakuasi untuk komunitas pesisir.",
-  "Segera evakuasi ke daerah tinggi saat ada peringatan tsunami.",
-  "Jangan kembali ke pantai sampai diberitahu aman oleh pihak berwenang.",
-  "Lindungi diri dari debu dan kontaminasi setelah tsunami.",
-  "Laporkan kerusakan infrastruktur dan kebutuhan bantuan kepada pihak berwenang.",
-  "Berikan dukungan kepada komunitas yang terdampak untuk proses pemulihan."]
+      recommendations: [
+        "Pasang alat pendeteksi tsunami untuk memantau perubahan tinggi air laut.",
+        "Siapkan jalur evakuasi yang jelas di wilayah pesisir.",
+        "Bangun shelter tahan tsunami di daerah rawan bencana.",
+        "Edukasi masyarakat tentang tanda-tanda tsunami, seperti surutnya air laut secara tiba-tiba.",
+        "Hindari pembangunan di zona merah rawan tsunami dan prioritaskan tata ruang aman."
+      ]
     },
     Longsor: {
       color: "bg-green-200",
       image: LongsorImage,
-      recommendations: ["1. Membangun tembok penahan dan drainase untuk mencegah longsor.",
-    "Melakukan survei geologi untuk mengidentifikasi daerah rawan longsor.",
-    "Evakuasi segera jika ada tanda-tanda longsor (retakan tanah, suara gemuruh).",
-    "Hindari area di bawah lereng yang curam saat hujan deras.",
-    "Laporkan kerusakan ke otoritas setempat setelah longsor terjadi.",
-    "Berikan informasi kepada masyarakat tentang cara mengenali tanda-tanda longsor.",
-    "Siapkan rencana evakuasi yang jelas untuk daerah yang berisiko longsor."]
+      recommendations: [
+        "Stabilkan lereng rawan longsor dengan terasering, retaining wall, atau teknologi geotekstil.",
+        "Lakukan reboisasi di area yang rentan erosi dan longsor.",
+        "Pasang sensor pemantau pergerakan tanah di lereng-lereng curam.",
+        "Batasi pembangunan di wilayah dengan kemiringan curam atau tanah tidak stabil.",
+        "Sosialisasikan cara mitigasi longsor kepada masyarakat setempat."
+      ]
     },
     Gempa_Bumi: {
       color: "bg-yellow-200",
       image: gempaBumi,
-      recommendations: ["1. Mengembangkan bangunan tahan gempa sesuai dengan standar yang ditetapkan.",
-    "Melakukan latihan evakuasi secara berkala untuk masyarakat.",
-    "Berlindung di bawah meja atau struktur yang kuat saat gempa terjadi.",
-    "Jangan menggunakan lift dan menjauh dari jendela saat gempa.",
-    "Periksa diri dan orang di sekitar untuk cedera setelah gempa.",
-    "Laporkan kerusakan dan kebutuhan bantuan kepada pihak berwenang.",
-    "Siapkan kit darurat yang mencakup makanan, air, dan perlengkapan pertolongan pertama."]
+      recommendations: [
+        "Gunakan teknologi tahan gempa dalam pembangunan rumah dan infrastruktur publik.",
+        "Identifikasi wilayah dengan tanah lunak atau dekat zona patahan aktif untuk mitigasi.",
+        "Pasang alat pendeteksi gempa di lokasi strategis untuk memberikan peringatan dini.",
+        "Siapkan jalur evakuasi dan posko darurat di wilayah rawan gempa.",
+        "Edukasi masyarakat tentang tindakan saat gempa, seperti berlindung di tempat aman."
+      ]
     },
     Gunung_Api: {
       color: "bg-red-200",
       image: GunungApiImage,
-      recommendations: ["1. Memantau aktivitas gunung berapi melalui lembaga geologi secara berkala.",
-    "Mengembangkan rencana evakuasi untuk masyarakat sekitar gunung berapi.",
-    "Ikuti instruksi evakuasi dan pergi ke tempat yang aman saat letusan terjadi.",
-    "Lindungi pernapasan dari abu vulkanik dengan masker atau kain.",
-    "Hindari mengonsumsi makanan yang terkontaminasi debu vulkanik setelah letusan.",
-    "Laporkan kerusakan dan kebutuhan bantuan kepada pihak berwenang.",
-    "Berikan dukungan kepada masyarakat yang terkena dampak dalam proses pemulihan."]
+      recommendations: [
+        "Pasang sistem pemantauan aktivitas vulkanik seperti seismometer dan gas sensor.",
+        "Tetapkan jalur evakuasi yang aman dan adakan simulasi secara rutin.",
+        "Bangun shelter di luar radius bahaya untuk evakuasi sementara.",
+        "Lindungi ekosistem sekitar gunung untuk meminimalkan dampak aliran lahar.",
+        "Berikan informasi kepada masyarakat tentang tanda-tanda letusan gunung api dan langkah mitigasi."
+      ]
     }
   };
+  
 
   return (
 <motion.div
@@ -216,7 +222,7 @@ const Hasil = () => {
         Disaster Risk Assessment Results
       </h2>
       <h3 className="text-lg font-bold text-white">
-        Location: {locationName || "Unknown"}
+        Location:{locationData}
       </h3>
       <p className="text-white">
         Current Season: <span className="font-bold">{isRainySeason ? "Rainy" : "Dry"}</span>
