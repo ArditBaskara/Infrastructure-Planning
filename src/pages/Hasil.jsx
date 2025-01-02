@@ -29,7 +29,7 @@ const Hasil = () => {
   const pickCF = {};
   const userCF = {};
   const [resultCF, setResultCF] = useState({});
-  const [locationData, setLocation] = useState("")
+  const [locationData, setLocation] = useState("");
 
   const savedWeather = JSON.parse(localStorage.getItem("checkboxWeather"));
   const savedSungai = JSON.parse(localStorage.getItem("checkboxSungai"));
@@ -93,7 +93,7 @@ const Hasil = () => {
             }
           }
         }
-      }
+        }
         setCF(savedCF.slice(0, Math.ceil(savedCF.length / 2)));
 
         let cfResults = {};
@@ -206,75 +206,78 @@ const Hasil = () => {
   
 
   return (
-<motion.div
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  exit={{ opacity: 0 }}
-  transition={{ duration: 0.5 }}
-  className="w-screen h-screen bg-cover bg-center"
-  style={{ backgroundImage: `url(${bg})` }}
->
-  <div className="w-full h-full flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 mt-1">
-
-    {/* Header Card */}
-    <div className="w-full max-w-lg bg-blue-900 p-6 rounded-lg shadow-lg mt-8">
-      <h2 className="text-xl font-bold mb-4 text-white text-center">
-        Disaster Risk Assessment Results
-      </h2>
-      <h3 className="text-lg font-bold text-white">
-        Location:{locationData}
-      </h3>
-      <p className="text-white">
-        Current Season: <span className="font-bold">{isRainySeason ? "Rainy" : "Dry"}</span>
-      </p>
-    </div>
-
-    {/* Results Grid */}
-    <div className="w-full max-w-7xl mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {Object.entries(resultCF).map(([disaster, riskValue]) => (
-        <div
-          key={disaster}
-          className="relative group card shadow-xl bg-gray-600 overflow-hidden rounded-lg transform transition-transform hover:scale-105"
-        >
-          {/* Image Section */}
-          <figure className="w-full h-40 sm:h-48 md:h-56 lg:h-64 overflow-hidden">
-            <img
-              src={recommendationsPerDisaster[disaster]?.image || "path/to/default.jpg"}
-              alt={disaster}
-              className="w-full h-full object-cover"
-            />
-          </figure>
-
-          {/* Information Section */}
-          <div className="absolute bottom-0 left-0 right-0 bg-white p-4 transition-all transform translate-y-full group-hover:translate-y-0 max-h-40 overflow-auto">
-            <h2 className="text-lg font-bold text-gray-700">
-              {disaster} ({(riskValue * 100).toFixed(1)}%)
-            </h2>
-            <ul className="mt-2 text-sm text-gray-600 space-y-1">
-              {recommendationsPerDisaster[disaster]?.recommendations.map((rec, idx) => (
-                <li key={idx} className="list-disc list-inside">
-                  {rec}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      ))}
-    </div>
-
-    {/* Back to Home Button */}
-    <button
-      onClick={() => {
-        localStorage.clear(); // Reset all saved data
-        window.location.href = "/"; // Navigate back to the hero page
-      }}
-      className="mt-6 px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-screen h-screen bg-cover bg-center"
+      style={{ backgroundImage: `url(${bg})` }}
     >
-      Kembali ke Beranda
-    </button>
-  </div>
-</motion.div>
+      <div className="w-full h-full flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 mt-1">
 
+        {/* Header Card */}
+        <div className="w-full max-w-lg bg-blue-900 p-6 rounded-lg shadow-lg mt-8">
+          <h2 className="text-xl font-bold mb-4 text-white text-center">
+            Disaster Risk Assessment Results
+          </h2>
+          <h3 className="text-lg font-bold text-white">
+            Location:{locationData}
+          </h3>
+          <p className="text-white">
+            Current Season: <span className="font-bold">{isRainySeason ? "Rainy" : "Dry"}</span>
+          </p>
+        </div>
+
+        {/* Results Grid */}
+        <div className="w-full max-w-7xl mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Object.entries(resultCF).map(([disaster, riskValue]) => (
+            <div
+              key={disaster}
+              className="relative group card shadow-xl bg-gray-600 overflow-hidden rounded-lg transform transition-transform hover:scale-105"
+            >
+              {/* Image Section */}
+              <figure className="w-full h-40 sm:h-48 md:h-56 lg:h-64 overflow-hidden">
+                <img
+                  src={recommendationsPerDisaster[disaster]?.image || "path/to/default.jpg"}
+                  alt={disaster}
+                  className="w-full h-full object-cover"
+                />
+              </figure>
+
+              {/* Always Visible Information Section */}
+              <div className="absolute top-0 left-0 right-0 bg-white p-4 max-h-40">
+                <h2 className="text-lg font-bold text-gray-700">
+                  {disaster} ({(riskValue * 100).toFixed(1)}%)
+                </h2>
+              </div>
+
+              {/* Hoverable Recommendations Section */}
+              <div className="absolute bottom-0 left-0 right-0 bg-white p-4 transition-all transform translate-y-full group-hover:translate-y-0 max-h-40 overflow-auto">
+                <ul className="mt-2 text-sm text-gray-600 space-y-1">
+                  {recommendationsPerDisaster[disaster]?.recommendations.map((rec, idx) => (
+                    <li key={idx} className="list-disc list-inside">
+                      {rec}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Back to Home Button */}
+        <button
+          onClick={() => {
+            localStorage.clear(); // Reset all saved data
+            window.location.href = "/"; // Navigate back to the hero page
+          }}
+          className="mt-6 px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+        >
+          Kembali ke Beranda
+        </button>
+      </div>
+    </motion.div>
   );
 };
 

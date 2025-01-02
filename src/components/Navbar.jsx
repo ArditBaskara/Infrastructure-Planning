@@ -109,14 +109,9 @@ class Navbar extends React.PureComponent {
         <NavBarToggle onClick={() => this.toggleNavBar()}>
           <Hamburger />
         </NavBarToggle>
-        <Logo href="#">Sistem Pakar</Logo>
+        <Logo href="/">Sistem Pakar</Logo>
         <MainNav display={this.state.displayNav}>
-          <NavLi>
-            <NavLink href="/">Beranda</NavLink>
-          </NavLi>
-          <NavLi>
-            <NavLink href="#">Data Bencana</NavLink>
-          </NavLi>
+
         </MainNav>
       </Bar>
     );
