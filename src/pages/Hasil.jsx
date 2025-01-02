@@ -253,7 +253,7 @@ const Hasil = () => {
               </div>
 
               {/* Hoverable Recommendations Section */}
-              <div className="absolute bottom-0 left-0 right-0 bg-white p-4 transition-all transform translate-y-full group-hover:translate-y-0 max-h-40 overflow-auto">
+              <div className="absolute bottom-0 left-0 right-0 bg-current p-4 transition-all transform translate-y-full group-hover:translate-y-0 max-h-40 overflow-auto">
                 <ul className="mt-2 text-sm text-gray-600 space-y-1">
                   {recommendationsPerDisaster[disaster]?.recommendations.map((rec, idx) => (
                     <li key={idx} className="list-disc list-inside">
