@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
-import bg from "../assets/bgg.jpg"
+import bg from "../assets/bgg.jpg";
 
 const Prediction = () => {
   const [step, setStep] = useState(1); // Step state
@@ -12,7 +12,7 @@ const Prediction = () => {
   const handleNextStep = () => {
     if (location.trim() !== "") {
       setStep(2); // Increment step
-      navigate("/weather"); // Navigate to next step's page
+      navigate("/Sungai"); // Navigate to next step's page
     } else {
       alert("Harap masukkan lokasi terlebih dahulu!");
     }
@@ -36,25 +36,27 @@ const Prediction = () => {
             </ul>
           </div>
 
-<div className="w-full max-w-lg bg-purple-900 p-6 rounded-lg shadow-lg mt-8 sm:mt-6 md:mt-4 lg:mt-4 xl:mt-0">
-      <h2 className="text-2xl font-bold mb-4 text-white">Masukkan Lokasi</h2>
-      <form className="space-y-4">
-        <input
-          type="text"
-          placeholder="Masukkan lokasi Anda"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="w-full p-2 rounded border text-white bg-purple-800 placeholder-purple-300 border-purple-600 focus:outline-none focus:border-purple-500"
-        />
-        <button
-          type="button"
-          onClick={handleNextStep}
-          className="w-full mt-4 py-2 px-4 bg-purple-700 text-white rounded hover:bg-purple-800 transition-colors duration-200"
-        >
-          Submit
-        </button>
-      </form>
-    </div>
+          <div className="w-full max-w-lg bg-purple-900 p-6 rounded-lg shadow-lg mt-8 sm:mt-6 md:mt-4 lg:mt-4 xl:mt-0">
+            <h2 className="text-2xl font-bold mb-4 text-white">
+              Masukkan Lokasi
+            </h2>
+            <form className="space-y-4">
+              <input
+                type="text"
+                placeholder="Masukkan lokasi Anda"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="w-full p-2 rounded border text-white bg-purple-800 placeholder-purple-300 border-purple-600 focus:outline-none focus:border-purple-500"
+              />
+              <button
+                type="button"
+                onClick={handleNextStep}
+                className="w-full mt-4 py-2 px-4 bg-purple-700 text-white rounded hover:bg-purple-800 transition-colors duration-200"
+              >
+                Submit
+              </button>
+            </form>
+          </div>
         </div>
       </motion.div>
     </>
