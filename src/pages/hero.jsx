@@ -89,9 +89,6 @@ const Hero = () => {
                 >
                   Mulai Prediksi
                 </button>
-                <button className="btn btn-ghost text-cyan-50 text-xl hover:bg-green-600 border-2 border-cyan-200 rounded-md transition duration-300">
-                  Data Bencana
-                </button>
               </div>
             </motion.div>
           </HeroContent>
