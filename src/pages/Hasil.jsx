@@ -219,14 +219,11 @@ const Hasil = () => {
         {/* Header Card */}
         <div className="w-full max-w-lg bg-blue-900 p-6 rounded-lg shadow-lg mt-8">
           <h2 className="text-xl font-bold mb-4 text-white text-center">
-            Disaster Risk Assessment Results
+          Hasil Penilaian Risiko Bencana
           </h2>
           <h3 className="text-lg font-bold text-white">
             Location:{locationData}
           </h3>
-          <p className="text-white">
-            Current Season: <span className="font-bold">{isRainySeason ? "Rainy" : "Dry"}</span>
-          </p>
         </div>
 
         {/* Results Grid */}
@@ -234,7 +231,7 @@ const Hasil = () => {
           {Object.entries(resultCF).map(([disaster, riskValue]) => (
             <div
               key={disaster}
-              className="relative group card shadow-xl bg-gray-600 overflow-hidden rounded-lg transform transition-transform hover:scale-105"
+              className="relative group card shadow-xl bg-current overflow-hidden rounded-lg transform transition-transform hover:scale-105"
             >
               {/* Image Section */}
               <figure className="w-full h-40 sm:h-48 md:h-56 lg:h-64 overflow-hidden">
